@@ -19,7 +19,7 @@ var multiplier = 1
 var game_finished := false
 var current_turn := ""
 var prev_puzzles = []
-
+var should_heal = false
 var pending_puzzles = [] 
 var current_board = ""
 var player_current_board = ""
@@ -180,61 +180,86 @@ func apply_word_effect(word: String, owner: String):
 	multiplier +=1
 	is_game_running = false
 	if owner == "player":
-		bot_hp -= damage
-		$BotHPDamage.text = "-" + str(damage)
-		$BotHPDamage.modulate = Color(1, 0.3, 0.3)
-		play_popup_effect($BotHPDamage)
-		update_hp_ui()
-		await get_tree().create_timer(.4).timeout
-		$RPSContainer.remove_type(player_current_board)
-		
-		for i in range(0,multiplier):
-			await get_tree().create_timer(.5).timeout
+		should_heal = $RPSContainer.should_heal(player_current_board)
+
+		if should_heal:
+			player_hp += (2 * damage)
+			if player_hp > max_hp:
+				player_hp = max_hp
+			play_popup_effect($PlayerHPDamage)
+			$PlayerHPDamage.text = "+" + str((damage*2))
+			$PlayerHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
+			update_hp_ui()
+		else:
+			bot_hp -= damage
 			$BotHPDamage.text = "-" + str(damage)
 			$BotHPDamage.modulate = Color(1, 0.3, 0.3)
 			play_popup_effect($BotHPDamage)
-			
-			bot_hp -= damage
 			update_hp_ui()
-		await get_tree().create_timer(.5).timeout
-		$BotHPDamage.text = "+" + str(debuff)
-		$BotHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
-		bot_hp += debuff
-		play_popup_effect($BotHPDamage)
-		
-		$RPSContainer.get_debuff(player_current_board)
-		update_hp_ui()
-		
-		var bar = $BotHPBar
-		bar.modulate = Color(1, 0.3, 0.3)
-		create_tween().tween_property(bar, "modulate", Color(1,1,1), 0.4)
-		print('playeeeeeeeeeer:',(multiplier  * damage) - debuff)
-	else:
-		player_hp -= damage
-		update_hp_ui()
-		play_popup_effect($PlayerHPDamage)
-		$PlayerHPDamage.text = "-" + str(damage)
-		$PlayerHPDamage.modulate = Color(1, 0.3, 0.3)
-		await get_tree().create_timer(.4).timeout
-		$RPSContainer.remove_type(current_board)
-		for i in range(0,multiplier):
+			await get_tree().create_timer(.4).timeout
+			$RPSContainer.remove_type(player_current_board)
+			
+			for i in range(0,multiplier):
+				await get_tree().create_timer(.5).timeout
+				$BotHPDamage.text = "-" + str(damage)
+				$BotHPDamage.modulate = Color(1, 0.3, 0.3)
+				play_popup_effect($BotHPDamage)
+				
+				bot_hp -= damage
+				update_hp_ui()
 			await get_tree().create_timer(.5).timeout
+			$BotHPDamage.text = "+" + str(debuff)
+			$BotHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
+			if debuff:
+				bot_hp += debuff
+			play_popup_effect($BotHPDamage)
+			
+			$RPSContainer.get_debuff(player_current_board)
+			update_hp_ui()
+			
+			var bar = $BotHPBar
+			bar.modulate = Color(1, 0.3, 0.3)
+			create_tween().tween_property(bar, "modulate", Color(1,1,1), 0.4)
+			print('playeeeeeeeeeer:',(multiplier  * damage) - debuff)
+	else:
+		should_heal = $RPSContainer.should_heal(current_board)
+		if should_heal:
+			bot_hp += (2 * damage)
+			if bot_hp > max_hp:
+				bot_hp = max_hp
+			await get_tree().create_timer(.5).timeout
+			$BotHPDamage.text = "+" + str((damage*2))
+			$BotHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
+			bot_hp += debuff
+			play_popup_effect($BotHPDamage)
+			update_hp_ui()
+		else:
+			player_hp -= damage
+			update_hp_ui()
 			play_popup_effect($PlayerHPDamage)
 			$PlayerHPDamage.text = "-" + str(damage)
 			$PlayerHPDamage.modulate = Color(1, 0.3, 0.3)
-			player_hp -= damage
+			await get_tree().create_timer(.4).timeout
+			$RPSContainer.remove_type(current_board)
+			for i in range(0,multiplier):
+				await get_tree().create_timer(.5).timeout
+				play_popup_effect($PlayerHPDamage)
+				$PlayerHPDamage.text = "-" + str(damage)
+				$PlayerHPDamage.modulate = Color(1, 0.3, 0.3)
+				player_hp -= damage
+				update_hp_ui()
+			await get_tree().create_timer(.5).timeout
+			if debuff:
+				player_hp += debuff
+			play_popup_effect($PlayerHPDamage)
+			$PlayerHPDamage.text = "+" + str(debuff)
+			$PlayerHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
+			$RPSContainer.get_debuff(current_board)
 			update_hp_ui()
-		await get_tree().create_timer(.5).timeout
-		player_hp += debuff
-		play_popup_effect($PlayerHPDamage)
-		$PlayerHPDamage.text = "+" + str(debuff)
-		$PlayerHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
-		$RPSContainer.get_debuff(current_board)
-		update_hp_ui()
-		var bar = $"PlayerHPBar"
-		bar.modulate = Color(1, 0.3, 0.3)
-		create_tween().tween_property(bar, "modulate", Color(1,1,1), 0.4)
-		print('boooooooooot:',(multiplier  * damage) - debuff)
+			var bar = $"PlayerHPBar"
+			bar.modulate = Color(1, 0.3, 0.3)
+			create_tween().tween_property(bar, "modulate", Color(1,1,1), 0.4)
+			print('boooooooooot:',(multiplier  * damage) - debuff)
 	multiplier = 0
 	is_game_running = true
 	

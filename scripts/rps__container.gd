@@ -106,7 +106,19 @@ func pick_random_card(number):
 				new_deck.append(value)
 				break
 
-
+func should_heal(type):
+	var similar_items = []
+	similar_items = get_tree().get_nodes_in_group(type)
+	if similar_items.size() >= 2:
+		for item in similar_items :
+			item.play_break_animation(false)
+			current_deck = current_deck.filter(func(item): return item[0] != type)
+			remove_type(type)
+			fill_free_space()
+		return true
+	else:
+		return false
+	
 
 func remove_type(type_name: String):
 	var targets
@@ -180,8 +192,9 @@ func get_debuff(type_name):
 	elif type_name == "Scissors":
 		targets = get_tree().get_nodes_in_group("Rock")
 		debuff = targets.size()
-	for node in targets:
-		node.get_debuff("-1")
+	if targets:
+		for node in targets:
+			node.get_debuff("-1")
 	get_parent().debuff = debuff
 
 func fill_free_space():
