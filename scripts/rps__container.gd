@@ -144,6 +144,7 @@ func remove_type(type_name: String):
 	free_space = targets.size()
 	await get_tree().create_timer(4).timeout
 	fill_free_space()
+	get_parent().buff = buff
 
 func spread_effect(node):
 	var affected =[]

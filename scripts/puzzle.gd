@@ -1,6 +1,6 @@
 extends Control
-var max_time = 20
-var time_left = 20
+var max_time = 30
+var time_left = 30
 var is_game_running = false
 var valid_words = []
 var rock_valid_words = []
@@ -8,13 +8,14 @@ var paper_valid_words = []
 var scissors_valid_words = []
 var found_words = []
 var word_owners = {}
-var player_hp := 40
-var bot_hp := 40
-var max_hp := 40
+var player_hp := 50
+var bot_hp := 50
+var max_hp := 50
 var current_word = ""
 var score = 0
 var bot_score = 0
 var debuff = 0
+var buff = 0
 var multiplier = 1
 var game_finished := false
 var current_turn := ""
@@ -177,7 +178,7 @@ func apply_word_effect(word: String, owner: String):
 	play_popup_effect($WordDamage)
 	await play_popup_effect($WordDamage)
 	$WordDamage.text = ""
-	multiplier +=1
+	multiplier = buff
 	is_game_running = false
 	if owner == "player":
 		should_heal = $RPSContainer.should_heal(player_current_board)
@@ -191,14 +192,7 @@ func apply_word_effect(word: String, owner: String):
 			$PlayerHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
 			update_hp_ui()
 		else:
-			bot_hp -= damage
-			$BotHPDamage.text = "-" + str(damage)
-			$BotHPDamage.modulate = Color(1, 0.3, 0.3)
-			play_popup_effect($BotHPDamage)
-			update_hp_ui()
-			await get_tree().create_timer(.4).timeout
 			$RPSContainer.remove_type(player_current_board)
-			
 			for i in range(0,multiplier):
 				await get_tree().create_timer(.5).timeout
 				$BotHPDamage.text = "-" + str(damage)
@@ -211,7 +205,8 @@ func apply_word_effect(word: String, owner: String):
 			$BotHPDamage.text = "+" + str(debuff)
 			$BotHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
 			if debuff:
-				bot_hp += debuff
+				for i in range(0,debuff):
+					bot_hp += .5 * (damage)
 			play_popup_effect($BotHPDamage)
 			
 			$RPSContainer.get_debuff(player_current_board)
@@ -234,12 +229,6 @@ func apply_word_effect(word: String, owner: String):
 			play_popup_effect($BotHPDamage)
 			update_hp_ui()
 		else:
-			player_hp -= damage
-			update_hp_ui()
-			play_popup_effect($PlayerHPDamage)
-			$PlayerHPDamage.text = "-" + str(damage)
-			$PlayerHPDamage.modulate = Color(1, 0.3, 0.3)
-			await get_tree().create_timer(.4).timeout
 			$RPSContainer.remove_type(current_board)
 			for i in range(0,multiplier):
 				await get_tree().create_timer(.5).timeout
@@ -250,7 +239,8 @@ func apply_word_effect(word: String, owner: String):
 				update_hp_ui()
 			await get_tree().create_timer(.5).timeout
 			if debuff:
-				player_hp += debuff
+				for i in range(0,debuff):
+					player_hp += .5 * (damage)
 			play_popup_effect($PlayerHPDamage)
 			$PlayerHPDamage.text = "+" + str(debuff)
 			$PlayerHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
