@@ -18,11 +18,8 @@ func play_break_animation(is_potion_break):
 		for neighbor in neighbors:
 			if neighbor:
 				neighbor.get_effect(potion_effect,false)
-	$Multiplier.text = "2x"
-	await get_tree().create_timer(1).timeout
 	$animation.play("break")
-	await $animation.animation_finished
-	$Multiplier.text = ""
+	await get_tree().create_timer(2).timeout
 	get_parent().items.erase(self)
 	queue_free()
 
@@ -32,6 +29,11 @@ func get_debuff(debuff):
 	$debuff.text = debuff
 	await get_tree().create_timer(2).timeout
 	$debuff.text = ""
+func get_buff(buff):
+	$Multiplier.text = "x"+ str(buff)
+	await get_tree().create_timer(2).timeout
+	$Multiplier.text = ""
+
 
 func play_potion_animation(item):
 	potion_effect = item[1]
@@ -99,6 +101,9 @@ func get_effect(effect,is_spread):
 				play_water_animation()
 			elif effected == "thunder":
 				play_thunder_animation()
+
+func show_effect():
+	return effected
 
 func play_fire_animation():
 	$animation.play("fire")

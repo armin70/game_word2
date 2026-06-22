@@ -14,9 +14,8 @@ var max_hp := 50
 var current_word = ""
 var score = 0
 var bot_score = 0
-var debuff = 0
-var buff = 0
-var multiplier = 1
+var debuff = []
+var multiplier = []
 var game_finished := false
 var current_turn := ""
 var prev_puzzles = []
@@ -173,88 +172,88 @@ func play_popup_effect(label):
 
 
 func apply_word_effect(word: String, owner: String):
-	var damage = word.length()
+	var damage = word.length() * 2
 	$WordDamage.text = str(damage)
 	play_popup_effect($WordDamage)
 	await play_popup_effect($WordDamage)
 	$WordDamage.text = ""
-	multiplier = buff
 	is_game_running = false
 	if owner == "player":
 		should_heal = $RPSContainer.should_heal(player_current_board)
 
 		if should_heal:
-			player_hp += (2 * damage)
+			player_hp += 6 + (damage/2)
 			if player_hp > max_hp:
 				player_hp = max_hp
 			play_popup_effect($PlayerHPDamage)
-			$PlayerHPDamage.text = "+" + str((damage*2))
+			$PlayerHPDamage.text = "+" + str((6 + (damage/2)))
 			$PlayerHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
 			update_hp_ui()
-		else:
-			$RPSContainer.remove_type(player_current_board)
-			for i in range(0,multiplier):
-				await get_tree().create_timer(.5).timeout
-				$BotHPDamage.text = "-" + str(damage)
-				$BotHPDamage.modulate = Color(1, 0.3, 0.3)
-				play_popup_effect($BotHPDamage)
-				
-				bot_hp -= damage
-				update_hp_ui()
+		
+		$RPSContainer.remove_type(player_current_board)
+		for buff in multiplier:
 			await get_tree().create_timer(.5).timeout
-			$BotHPDamage.text = "+" + str(debuff)
-			$BotHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
-			if debuff:
-				for i in range(0,debuff):
-					bot_hp += .5 * (damage)
+			$BotHPDamage.text = "-" + str(buff * damage)
+			$BotHPDamage.modulate = Color(1, 0.3, 0.3)
 			play_popup_effect($BotHPDamage)
-			
-			$RPSContainer.get_debuff(player_current_board)
+			bot_hp -= buff * damage
 			update_hp_ui()
-			
-			var bar = $BotHPBar
-			bar.modulate = Color(1, 0.3, 0.3)
-			create_tween().tween_property(bar, "modulate", Color(1,1,1), 0.4)
-			print('playeeeeeeeeeer:',(multiplier  * damage) - debuff)
+		await get_tree().create_timer(.5).timeout
+		$BotHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
+		debuff = $RPSContainer.get_debuff(player_current_board)
+		print("debuf array", debuff)
+		for i in debuff:
+			var calculated = i * damage
+			bot_hp += calculated  
+			$BotHPDamage.text = "+" + str(calculated  )
+				
+		play_popup_effect($BotHPDamage)
+		
+		
+		update_hp_ui()
+		
+		var bar = $BotHPBar
+		bar.modulate = Color(1, 0.3, 0.3)
+		create_tween().tween_property(bar, "modulate", Color(1,1,1), 0.4)
 	else:
 		should_heal = $RPSContainer.should_heal(current_board)
 		if should_heal:
-			bot_hp += (2 * damage)
+			bot_hp += 6 + (damage/2)
 			if bot_hp > max_hp:
 				bot_hp = max_hp
 			await get_tree().create_timer(.5).timeout
-			$BotHPDamage.text = "+" + str((damage*2))
+			$BotHPDamage.text = "+" + str((6 + (damage/2)))
 			$BotHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
-			bot_hp += debuff
 			play_popup_effect($BotHPDamage)
 			update_hp_ui()
-		else:
-			$RPSContainer.remove_type(current_board)
-			for i in range(0,multiplier):
-				await get_tree().create_timer(.5).timeout
-				play_popup_effect($PlayerHPDamage)
-				$PlayerHPDamage.text = "-" + str(damage)
-				$PlayerHPDamage.modulate = Color(1, 0.3, 0.3)
-				player_hp -= damage
-				update_hp_ui()
+		$RPSContainer.remove_type(current_board)
+		for buff in multiplier:
 			await get_tree().create_timer(.5).timeout
-			if debuff:
-				for i in range(0,debuff):
-					player_hp += .5 * (damage)
 			play_popup_effect($PlayerHPDamage)
-			$PlayerHPDamage.text = "+" + str(debuff)
-			$PlayerHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
-			$RPSContainer.get_debuff(current_board)
+			$PlayerHPDamage.text = "-" + str(buff * damage)
+			$PlayerHPDamage.modulate = Color(1, 0.3, 0.3)
+			player_hp -= buff * damage
 			update_hp_ui()
-			var bar = $"PlayerHPBar"
-			bar.modulate = Color(1, 0.3, 0.3)
-			create_tween().tween_property(bar, "modulate", Color(1,1,1), 0.4)
-			print('boooooooooot:',(multiplier  * damage) - debuff)
-	multiplier = 0
+		await get_tree().create_timer(.5).timeout
+		debuff = $RPSContainer.get_debuff(current_board)
+		
+		for i in debuff:
+			var calculated = i * damage
+			player_hp += calculated
+			$PlayerHPDamage.text = "+" + str(calculated)
+			$PlayerHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
+			play_popup_effect($PlayerHPDamage)
+				
+		update_hp_ui()
+		var bar = $"PlayerHPBar"
+		bar.modulate = Color(1, 0.3, 0.3)
+		create_tween().tween_property(bar, "modulate", Color(1,1,1), 0.4)
+	multiplier = []
 	is_game_running = true
 	
 	update_hp_ui()
 	check_game_over()
+
 func check_game_over():
 
 	if player_hp <= 0:
@@ -266,7 +265,8 @@ func check_game_over():
 
 		result_label.text = "💀 شما باختید!"
 		end_popup.popup_centered()
-
+		is_game_running = false
+		get_tree().paused = true
 	elif bot_hp <= 0:
 		game_finished = true
 		#get_parent().get_parent().game_finished = true
@@ -276,7 +276,8 @@ func check_game_over():
 
 		result_label.text = "🏆 شما برنده شدید!"
 		end_popup.popup_centered()
-
+		is_game_running = false
+		get_tree().paused = true
 
 func update_hp_ui():
 	player_hp_label.text = str(player_hp)
@@ -286,6 +287,7 @@ func update_hp_ui():
 	create_tween().tween_property($BotHPBar, "value", bot_hp, 0.3)
 func _start_player_turn():
 	if game_finished: return
+
 	$"puzzle container".input_enabled = true
 	current_word = ""
 	current_turn = "player"
@@ -326,7 +328,7 @@ func submit_current_word():
 		add_found_word(current_word,'player')
 
 		$"puzzle container".board_buff(player_current_board)
-		turn_over()
+		_start_bot_turn()
 	else:
 		print("❌ غلط")
 		feedback_label.text = "❌ غلط"
@@ -522,19 +524,30 @@ func update_turn_ui():
 	var bot_bar = $BotHPBar
 
 	if current_turn == "player":
-		print("player_color: ", current_turn)
+		#print("player_color: ", current_turn)
 		player_bar.modulate = Color.WHITE
 		bot_bar.modulate = Color.GRAY
+		await get_tree().create_timer(1).timeout
+		$turn_indicator.visible = true
+		await get_tree().create_timer(4).timeout
+		$turn_indicator.visible = false
 	elif current_turn == "bot":
-		print("bot_color: ", current_turn)
+		#print("bot_color: ", current_turn)
 		player_bar.modulate = Color.GRAY
 		bot_bar.modulate = Color.WHITE
+		await get_tree().create_timer(1).timeout
+		$bot_turn_indicator.visible = true
+		await get_tree().create_timer(4).timeout
+		$bot_turn_indicator.visible = false
+		
 func _on_restart_button_pressed() -> void:
+	get_tree().paused = false
 	get_tree().reload_current_scene()
 
-
 func _on_exit_button_pressed() -> void:
+	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+	
 
 
 func _on_next_puzzle_pressed() -> void:

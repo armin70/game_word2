@@ -30,6 +30,7 @@ const bg_player2  = preload("uid://7l3tedfxqwo6")
 
 var letter_textures = {
 	"ا": preload("res://assets/alphabet/الف.png"),
+	"آ": preload("res://assets/alphabet/الف.png"),
 	"ب": preload("res://assets/alphabet/ب.png"),
 	"پ": preload("res://assets/alphabet/پ.png"),
 	"ت": preload("res://assets/alphabet/ت.png"),

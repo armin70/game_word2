@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bvcohcdrbdnpi"]
 
 [ext_resource type="Script" uid="uid://bbsbhrxpjth2k" path="res://scripts/puzzle_wrapper.gd" id="1_3asjn"]
-[ext_resource type="Texture2D" uid="uid://calqm48l833xu" path="res://extras/wheel paper.png" id="2_5ifmx"]
+[ext_resource type="Texture2D" uid="uid://c25u7a3axygjb" path="res://extras/rock.png" id="2_3asjn"]
 [ext_resource type="Texture2D" uid="uid://xbwbpe7sb8uu" path="res://assets/alphabet/ر.png" id="4_3asjn"]
 [ext_resource type="FontFile" uid="uid://pfg8ofwqc0xk" path="res://assets/fonts/Lalezar-Regular.ttf" id="4_t8qc4"]
 
@@ -34,7 +34,7 @@ grow_vertical = 2
 [node name="Wheel" type="Sprite2D" parent="LettersContainer" unique_id=2088958079]
 position = Vector2(-380, 494.99994)
 scale = Vector2(0.64636457, 0.64636457)
-texture = ExtResource("2_5ifmx")
+texture = ExtResource("2_3asjn")
 
 [node name="Letter1" type="TextureButton" parent="LettersContainer" unique_id=1074735793]
 layout_mode = 0
@@ -98,6 +98,7 @@ begin_cap_mode = 2
 end_cap_mode = 2
 
 [node name="BoradBuff" type="Label" parent="." unique_id=159346624]
+visible = false
 layout_mode = 0
 offset_left = 204.0
 offset_top = 637.0

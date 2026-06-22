@@ -802,6 +802,7 @@ sprite_frames = SubResource("SpriteFrames_pohdc")
 animation = &"fire"
 
 [node name="potion_effect" type="Label" parent="." unique_id=1652349940]
+visible = false
 offset_left = -16.0
 offset_top = -85.0
 offset_right = 24.0

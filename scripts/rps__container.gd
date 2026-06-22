@@ -122,29 +122,33 @@ func should_heal(type):
 
 func remove_type(type_name: String):
 	var targets
-	var buff
+	var buff =[]
 	var potion
 	if type_name == "Rock":
 		targets = get_tree().get_nodes_in_group("Scissors")
 		current_deck = current_deck.filter(func(item): return item[0] != "Scissors")
-		buff = targets.size()
 	elif type_name == "Paper":
 		targets = get_tree().get_nodes_in_group("Rock")
 		current_deck = current_deck.filter(func(item): return item[0] != "Rock")
-		buff = targets.size()
 	elif type_name == "Scissors":
 		targets = get_tree().get_nodes_in_group("Paper")
 		current_deck = current_deck.filter(func(item): return item[0] != "Paper")
-		buff = targets.size()
 	else:
 		print('cant catch')
-	
+	if targets:
+		for target in targets:
+			if target.effected !="":
+				buff.append(1.75)
+				target.get_buff(1.75)
+			else:
+				buff.append(1)
+				target.get_buff(1)
+				
 	get_parent().multiplier = buff
 	await wait_to_finish_animation(targets)
 	free_space = targets.size()
 	await get_tree().create_timer(4).timeout
 	fill_free_space()
-	get_parent().buff = buff
 
 func spread_effect(node):
 	var affected =[]
@@ -183,20 +187,32 @@ func wait_to_finish_animation(targets):
 
 func get_debuff(type_name):
 	var targets
-	var debuff
+	var debuff = []
 	if type_name == "Rock":
 		targets = get_tree().get_nodes_in_group("Paper")
-		debuff = targets.size()
 	elif type_name == "Paper":
 		targets = get_tree().get_nodes_in_group("Scissors")
-		debuff = targets.size()
 	elif type_name == "Scissors":
 		targets = get_tree().get_nodes_in_group("Rock")
-		debuff = targets.size()
+	print( "targetssss ", targets)
 	if targets:
 		for node in targets:
-			node.get_debuff("-1")
-	get_parent().debuff = debuff
+			print("gettt")
+			print("effect: ", node.show_effect())
+			if node.effected:
+				if node.effected == "fire" or node.effected == "thunder":
+					debuff.append(1.25)
+					node.get_debuff("-1.25")
+				elif node.effected == "water":
+					debuff.append(0)
+					node.get_debuff("0")
+				print("debuffed:",debuff )
+			else:
+				debuff.append(.5)
+				node.get_debuff("-1")
+				print("debuffed:",debuff )
+	return debuff
+	#get_parent().debuff = debuff
 
 func fill_free_space():
 	var deck = get_child_count()

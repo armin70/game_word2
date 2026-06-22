@@ -21,9 +21,9 @@ var Paper_borad_buff = 0
 	$Puzzle/LettersContainer/Letter4,
 	$Puzzle/LettersContainer/Letter5
 ]
-const WHEEL_PAPER = preload("uid://calqm48l833xu")
-const WHEEL_ROCK = preload("uid://pr5flvi2k8pf")
-const WHEEL_SCISSOR = preload("uid://di46837uo85hy")
+const WHEEL_PAPER = preload("res://extras/paper.png")
+const WHEEL_ROCK = preload("res://extras/rock.png")
+const WHEEL_SCISSOR = preload("res://extras/scissor.png")
 @onready var wheel: Sprite2D = $Puzzle/LettersContainer/Wheel
 
 var letter_textures = {
