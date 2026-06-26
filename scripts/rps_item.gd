@@ -34,6 +34,10 @@ func get_buff(buff):
 	await get_tree().create_timer(2).timeout
 	$Multiplier.text = ""
 
+func play_heal_animation():
+	$animation.play("heal")
+	await get_tree().create_timer(2).timeout
+	queue_free()
 
 func play_potion_animation(item):
 	potion_effect = item[1]

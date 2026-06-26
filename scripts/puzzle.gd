@@ -173,7 +173,7 @@ func play_popup_effect(label):
 
 func apply_word_effect(word: String, owner: String):
 	var damage = word.length() * 2
-	$WordDamage.text = str(damage)
+	$WordDamage.text = str(damage  * 2)
 	play_popup_effect($WordDamage)
 	await play_popup_effect($WordDamage)
 	$WordDamage.text = ""
@@ -188,33 +188,40 @@ func apply_word_effect(word: String, owner: String):
 			play_popup_effect($PlayerHPDamage)
 			$PlayerHPDamage.text = "+" + str((6 + (damage/2)))
 			$PlayerHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
+			await get_tree().create_timer(4).timeout
+			$RPSContainer.fill_free_space()
+
 			update_hp_ui()
-		
-		$RPSContainer.remove_type(player_current_board)
-		for buff in multiplier:
+		else:
+			print("damage too")
+			$RPSContainer.remove_type(player_current_board)
+			var full_damage = 0
+			for buff in multiplier:
+				await get_tree().create_timer(.5).timeout
+				$BotHPDamage.text = "-" + str(buff * damage)
+				$BotHPDamage.modulate = Color(1, 0.3, 0.3)
+				play_popup_effect($BotHPDamage)
+				bot_hp -= buff * damage
+				update_hp_ui()
+				full_damage += buff * damage
 			await get_tree().create_timer(.5).timeout
-			$BotHPDamage.text = "-" + str(buff * damage)
-			$BotHPDamage.modulate = Color(1, 0.3, 0.3)
+			$BotHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
+			debuff = $RPSContainer.get_debuff(player_current_board)
+			print("debuf array", debuff)
+			for i in debuff:
+				if full_damage - (i * damage)>0:
+					var calculated = i * damage
+					bot_hp += calculated  
+					$BotHPDamage.text = "+" + str(calculated  )
+					
 			play_popup_effect($BotHPDamage)
-			bot_hp -= buff * damage
+			
+			
 			update_hp_ui()
-		await get_tree().create_timer(.5).timeout
-		$BotHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
-		debuff = $RPSContainer.get_debuff(player_current_board)
-		print("debuf array", debuff)
-		for i in debuff:
-			var calculated = i * damage
-			bot_hp += calculated  
-			$BotHPDamage.text = "+" + str(calculated  )
-				
-		play_popup_effect($BotHPDamage)
-		
-		
-		update_hp_ui()
-		
-		var bar = $BotHPBar
-		bar.modulate = Color(1, 0.3, 0.3)
-		create_tween().tween_property(bar, "modulate", Color(1,1,1), 0.4)
+			
+			var bar = $BotHPBar
+			bar.modulate = Color(1, 0.3, 0.3)
+			create_tween().tween_property(bar, "modulate", Color(1,1,1), 0.4)
 	else:
 		should_heal = $RPSContainer.should_heal(current_board)
 		if should_heal:
@@ -225,34 +232,42 @@ func apply_word_effect(word: String, owner: String):
 			$BotHPDamage.text = "+" + str((6 + (damage/2)))
 			$BotHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
 			play_popup_effect($BotHPDamage)
+			await get_tree().create_timer(4).timeout
+			
+			$RPSContainer.fill_free_space()
 			update_hp_ui()
-		$RPSContainer.remove_type(current_board)
-		for buff in multiplier:
+		else:
+			print("damage too")
+			$RPSContainer.remove_type(current_board)
+			var full_damage = 0
+			for buff in multiplier:
+				await get_tree().create_timer(.5).timeout
+				play_popup_effect($PlayerHPDamage)
+				$PlayerHPDamage.text = "-" + str(buff * damage)
+				$PlayerHPDamage.modulate = Color(1, 0.3, 0.3)
+				player_hp -= buff * damage
+				update_hp_ui()
+				full_damage += buff * damage
 			await get_tree().create_timer(.5).timeout
-			play_popup_effect($PlayerHPDamage)
-			$PlayerHPDamage.text = "-" + str(buff * damage)
-			$PlayerHPDamage.modulate = Color(1, 0.3, 0.3)
-			player_hp -= buff * damage
+			debuff = $RPSContainer.get_debuff(current_board)
+			
+			for i in debuff:
+				if full_damage - (i * damage)>0:
+					var calculated = i * damage
+					player_hp += calculated
+					$PlayerHPDamage.text = "+" + str(calculated)
+					$PlayerHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
+					play_popup_effect($PlayerHPDamage)
+					
 			update_hp_ui()
-		await get_tree().create_timer(.5).timeout
-		debuff = $RPSContainer.get_debuff(current_board)
+			var bar = $"PlayerHPBar"
+			bar.modulate = Color(1, 0.3, 0.3)
+			create_tween().tween_property(bar, "modulate", Color(1,1,1), 0.4)
+		multiplier = []
+		is_game_running = true
 		
-		for i in debuff:
-			var calculated = i * damage
-			player_hp += calculated
-			$PlayerHPDamage.text = "+" + str(calculated)
-			$PlayerHPDamage.modulate = Color(0.0, 0.536, 0.287, 1.0)
-			play_popup_effect($PlayerHPDamage)
-				
 		update_hp_ui()
-		var bar = $"PlayerHPBar"
-		bar.modulate = Color(1, 0.3, 0.3)
-		create_tween().tween_property(bar, "modulate", Color(1,1,1), 0.4)
-	multiplier = []
-	is_game_running = true
-	
-	update_hp_ui()
-	check_game_over()
+		check_game_over()
 
 func check_game_over():
 

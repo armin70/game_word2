@@ -111,10 +111,8 @@ func should_heal(type):
 	similar_items = get_tree().get_nodes_in_group(type)
 	if similar_items.size() >= 2:
 		for item in similar_items :
-			item.play_break_animation(false)
+			item.play_heal_animation()
 			current_deck = current_deck.filter(func(item): return item[0] != type)
-			remove_type(type)
-			fill_free_space()
 		return true
 	else:
 		return false
@@ -135,6 +133,7 @@ func remove_type(type_name: String):
 		current_deck = current_deck.filter(func(item): return item[0] != "Paper")
 	else:
 		print('cant catch')
+		return null
 	if targets:
 		for target in targets:
 			if target.effected !="":
@@ -182,8 +181,9 @@ func spread_effect(node):
 
 
 func wait_to_finish_animation(targets):
-	for node in targets:
-		node.play_break_animation(true)
+	if targets:
+		for node in targets:
+			node.play_break_animation(true)
 
 func get_debuff(type_name):
 	var targets
