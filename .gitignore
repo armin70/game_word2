@@ -1,17 +1,48 @@
-# Godot
+# =========================
+# Godot 4+ Core
+# =========================
 .godot/
 .import/
+.export/
+mono/
+data_*/
 
-# Android builds
-android/build/
-*.aar
+# =========================
+# Exported builds (IMPORTANT)
+# =========================
+exports/
+build/
+dist/
+
+*.exe
+*.pck
 *.apk
 *.aab
+*.x86_64
+*.x86_32
+*.arm64
+*.arm32
+*.zip
+*.dmg
+*.app
+*.msi
+*.pdb
+*.so
 
-# Export
-export/
+# =========================
+# User / Editor settings
+# =========================
+*.godot
 export_presets.cfg
 
-# OS junk
+# =========================
+# OS junk files
+# =========================
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# =========================
+# Logs
+# =========================
+*.log
