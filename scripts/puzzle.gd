@@ -263,11 +263,11 @@ func apply_word_effect(word: String, owner: String):
 			var bar = $"PlayerHPBar"
 			bar.modulate = Color(1, 0.3, 0.3)
 			create_tween().tween_property(bar, "modulate", Color(1,1,1), 0.4)
-		multiplier = []
-		is_game_running = true
-		
-		update_hp_ui()
-		check_game_over()
+	multiplier = []
+	is_game_running = true
+
+	update_hp_ui()
+	check_game_over()
 
 func check_game_over():
 
